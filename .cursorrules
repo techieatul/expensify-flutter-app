@@ -1,0 +1,47 @@
+# Expensify Flutter App - Cursor AI Rules
+
+## Project Context
+- App Name: Expensify
+- Platform: Android (Flutter)
+- Technologies: Flutter, Dart
+- Key Features: 
+  - Add/edit/delete expenses
+  - Categorize expenses (Food, Transport, Entertainment, Bills, etc.)
+  - View expense history and statistics
+  - Monthly/weekly expense tracking
+  - Budget management
+  - Data persistence (local storage)
+- SDK Requirements: minSdk 21, targetSdk 34
+
+## Development Guidelines
+- Write complete, functional code solutions
+- Use Material Design 3 components
+- Implement proper state management (Provider or Riverpod)
+- Follow Flutter best practices
+- Use descriptive variable and function names
+- Add comprehensive comments for complex logic
+
+## Architecture
+- Use Clean Architecture or MVVM pattern
+- Separate business logic from UI
+- Folder structure:
+  - lib/models/ - Data models (Expense, Category)
+  - lib/screens/ - App screens (HomeScreen, AddExpenseScreen, etc.)
+  - lib/widgets/ - Reusable UI components
+  - lib/services/ - Business logic and data services
+  - lib/utils/ - Helper functions and constants
+
+## Code Style
+- Follow Dart naming conventions
+- Use const constructors where possible
+- Implement proper null safety
+- Use proper error handling and validation
+- Responsive design for different screen sizes
+
+## AI Assistance Focus
+- Generate complete widgets with proper lifecycle
+- Create proper form validation
+- Implement data persistence solutions
+- Generate meaningful test cases
+- Provide Material Design 3 styling
+- Help with state management patterns

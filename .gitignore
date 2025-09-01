@@ -1,0 +1,56 @@
+# Flutter/Dart specific files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+.vscode/
+.idea/
+
+# Android specific
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+# iOS specific
+ios/Flutter/Generated.xcconfig
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Web specific
+web/
+
+# Windows specific
+windows/
+
+# macOS specific
+macos/
+
+# Linux specific
+linux/
+
+# Temporary files
+*.tmp
+*.log
+
+# IDE files
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Keep important files
+!assets/
+!lib/
+!pubspec.yaml
+!README.md
+!Expensify-v1.0.apk
