@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'services/providers.dart';
 import 'services/theme_provider.dart';
 import 'services/lifecycle_service.dart';
+import 'services/currency_service.dart';
 import 'utils/utils.dart';
 import 'utils/sample_data.dart';
 
@@ -97,9 +98,12 @@ void main() async {
     }
   }
   
-  // Initialize lifecycle service
+  // Initialize services
   final lifecycleService = LifecycleService();
   await lifecycleService.initialize();
+  
+  final currencyService = CurrencyService.instance;
+  await currencyService.initialize();
   
   runApp(
     const ProviderScope(

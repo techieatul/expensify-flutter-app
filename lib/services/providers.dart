@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/models.dart';
 import 'services.dart';
+import 'currency_service.dart';
 import 'lifecycle_service.dart';
 
 /// Provider for ExpenseService
@@ -19,6 +20,11 @@ final categoryServiceProvider = Provider<CategoryService>((ref) {
 final splitServiceProvider = Provider<SplitService>((ref) {
   final expenseService = ref.watch(expenseServiceProvider);
   return SplitService(expenseService);
+});
+
+/// Provider for CurrencyService
+final currencyServiceProvider = Provider<CurrencyService>((ref) {
+  return CurrencyService.instance;
 });
 
 /// Provider for LifecycleService

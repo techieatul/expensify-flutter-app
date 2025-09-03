@@ -116,7 +116,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             Expanded(
               child: _buildSummaryCard(
                 'Total Spent',
-                '\$${totalAmount.toStringAsFixed(2)}',
+                ref.watch(currencyServiceProvider).formatAmount(totalAmount),
                 Icons.account_balance_wallet,
                 Theme.of(context).colorScheme.primary,
               ),
@@ -135,7 +135,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         const SizedBox(height: 12),
         _buildSummaryCard(
           'Average per Transaction',
-          '\$${avgPerExpense.toStringAsFixed(2)}',
+          ref.watch(currencyServiceProvider).formatAmount(avgPerExpense),
           Icons.trending_up,
           Theme.of(context).colorScheme.tertiary,
         ),
@@ -247,7 +247,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '\$${entry.value.toStringAsFixed(2)}',
+                              ref.watch(currencyServiceProvider).formatAmount(entry.value),
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -311,7 +311,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 title: Text(_getExpenseDisplayName(expense, category)),
                 subtitle: Text(expense.date.displayDate),
                 trailing: Text(
-                  expense.formattedAmount,
+                  ref.watch(currencyServiceProvider).formatAmount(expense.amount),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

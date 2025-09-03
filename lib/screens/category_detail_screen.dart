@@ -83,7 +83,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  totalAmount.currency,
+                  ref.watch(currencyServiceProvider).formatAmount(totalAmount),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -198,7 +198,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
           ),
         ),
         trailing: Text(
-          expense.formattedAmount,
+          ref.watch(currencyServiceProvider).formatAmount(expense.amount),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,

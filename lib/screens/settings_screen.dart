@@ -63,6 +63,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             _buildSectionHeader('Appearance'),
             _buildThemeCard(),
             const SizedBox(height: 24),
+            
+            // Currency Section
+            _buildSectionHeader('Currency'),
+            _buildCurrencyCard(),
+            const SizedBox(height: 24),
 
             // Backup & Restore Section
             _buildSectionHeader('Backup & Restore'),
@@ -161,6 +166,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             }
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildCurrencyCard() {
+    final currencyService = ref.watch(currencyServiceProvider);
+    final currentCurrency = currencyService.currentCurrency;
+
+    return Card(
+      child: ListTile(
+        leading: Icon(Icons.attach_money, color: Theme.of(context).colorScheme.primary),
+        title: const Text('Currency'),
+        subtitle: Text('Current: ${currentCurrency.name} (${currentCurrency.code})'),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              currentCurrency.symbol,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.arrow_forward_ios, size: 16),
+          ],
+        ),
+        onTap: () => _showCurrencySelector(),
       ),
     );
   }
@@ -1074,6 +1107,149 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         );
       }
     }
+  }
+
+  Future<void> _showCurrencySelector() async {
+    final currencyService = ref.read(currencyServiceProvider);
+    final currentCurrency = currencyService.currentCurrency;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Text(
+                  'Select Currency',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Popular currencies section
+            Text(
+              'Popular',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            
+            // Popular currencies grid
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: currencyService.popularCurrencies.map((currency) {
+                final isSelected = currencyService.isCurrencySelected(currency);
+                return FilterChip(
+                  selected: isSelected,
+                  onSelected: (selected) async {
+                    if (selected) {
+                      await currencyService.setCurrentCurrency(currency);
+                      setState(() {});
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Currency changed to ${currency.name}'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  avatar: Text(
+                    currency.symbol,
+                    style: TextStyle(
+                      color: isSelected 
+                          ? Theme.of(context).colorScheme.onSecondaryContainer
+                          : Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  label: Text('${currency.code} - ${currency.name}'),
+                  backgroundColor: currency == currentCurrency 
+                      ? Theme.of(context).colorScheme.secondaryContainer
+                      : null,
+                );
+              }).toList(),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // All currencies section
+            Text(
+              'All Currencies',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            
+            // All currencies list
+            Expanded(
+              child: ListView.builder(
+                itemCount: currencyService.availableCurrencies.length,
+                itemBuilder: (context, index) {
+                  final currency = currencyService.availableCurrencies[index];
+                  final isSelected = currencyService.isCurrencySelected(currency);
+                  
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: isSelected 
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.surfaceContainerHighest,
+                      child: Text(
+                        currency.symbol,
+                        style: TextStyle(
+                          color: isSelected 
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    title: Text(currency.name),
+                    subtitle: Text(currency.code),
+                    trailing: isSelected 
+                        ? Icon(
+                            Icons.check_circle,
+                            color: Theme.of(context).colorScheme.primary,
+                          )
+                        : null,
+                    onTap: () async {
+                      await currencyService.setCurrentCurrency(currency);
+                      setState(() {});
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Currency changed to ${currency.name}'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

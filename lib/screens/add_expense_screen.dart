@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/models.dart';
 import '../services/providers.dart';
 import '../utils/utils.dart';
+import '../widgets/widgets.dart';
 
 /// Screen for adding a new expense
 class AddExpenseScreen extends ConsumerStatefulWidget {
@@ -90,21 +91,47 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            TextFormField(
-              controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-              ],
-              decoration: const InputDecoration(
-                prefixText: '\$ ',
-                hintText: '0.00',
-                border: OutlineInputBorder(),
+            InkWell(
+              onTap: _showCalculator,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Theme.of(context).colorScheme.outline),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      '${ref.watch(currencyServiceProvider).currencySymbol} ',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        _amountController.text.isEmpty ? '0.00' : _amountController.text,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ),
+                    Icon(
+                      Icons.calculate,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ],
+                ),
               ),
-              style: Theme.of(context).textTheme.headlineSmall,
-              validator: Validators.validateAmount,
-              autofocus: true,
             ),
+            if (_amountController.text.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'Tap to enter amount using calculator',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -295,6 +322,32 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       });
     }
   }
+
+  Future<void> _showCalculator() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        margin: const EdgeInsets.all(16),
+        child: CalculatorInput(
+          initialValue: _amountController.text,
+          onValueChanged: (value) {
+            // Update the controller but don't trigger setState here
+            // as it would rebuild the bottom sheet
+            _amountController.text = value;
+          },
+          onDone: () {
+            setState(() {
+              // Trigger rebuild to show the new amount
+            });
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
+  }
   
   Future<void> _saveExpense() async {
     if (!_validateForm()) return;
@@ -359,6 +412,39 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }
   
   bool _validateForm() {
+    // Validate amount
+    if (_amountController.text.isEmpty || _amountController.text == '0') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter an amount'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return false;
+    }
+
+    final amount = double.tryParse(_amountController.text);
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid amount'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return false;
+    }
+
+    if (amount > 999999.99) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Amount cannot exceed \$999,999.99'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return false;
+    }
+    
+    // Validate other form fields (note field)
     if (!_formKey.currentState!.validate()) {
       return false;
     }

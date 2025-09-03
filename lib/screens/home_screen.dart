@@ -141,7 +141,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                total.currency,
+                ref.watch(currencyServiceProvider).formatAmount(total),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.bold,
@@ -282,7 +282,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                expense.formattedAmount,
+                ref.watch(currencyServiceProvider).formatAmount(expense.amount),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -345,7 +345,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Expense'),
-        content: Text('Are you sure you want to delete this ${expense.formattedAmount} expense?'),
+        content: Text('Are you sure you want to delete this ${ref.read(currencyServiceProvider).formatAmount(expense.amount)} expense?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -367,7 +367,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Show undo snackbar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${expense.formattedAmount} expense deleted'),
+        content: Text('${ref.read(currencyServiceProvider).formatAmount(expense.amount)} expense deleted'),
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
